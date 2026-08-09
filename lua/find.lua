@@ -27,30 +27,43 @@ function _G.native_find(text, _)
 	end
 	return vim.fn.matchfuzzy(result, text)
 end
+
 vim.opt.findfunc = "v:lua.native_find"
 
 vim.keymap.set("n", "<leader>sf", ":find ", { silent = false })
 
 -- Open buffers
 local function search_buffers()
- local items = {}
+	local items = {}
 
-  for _, buffer in ipairs(vim.fn.getbufinfo({ buflisted = 1 })) do
-    if buffer.name ~= "" then
-      table.insert(items, {
-        bufnr = buffer.bufnr,
-        filename = buffer.name,
-        lnum = buffer.lnum,
-      })
-    end
-  end
+	for _, buffer in ipairs(vim.fn.getbufinfo({ buflisted = 1 })) do
+		local filetype = vim.fn.getbufvar(buffer.bufnr, "&filetype")
+		local buftype = vim.fn.getbufvar(buffer.bufnr, "&buftype")
 
-  vim.fn.setqflist({}, "r", {
-    title = "Open buffers",
-    items = items,
-  })
+		local is_normal_file =
+				buffer.name ~= ""
+				and filetype ~= "netrw"
+				and buftype == ""
+				and vim.fn.isdirectory(buffer.name) == 0
 
-  vim.cmd("copen")
+		if is_normal_file then
+			table.insert(items, {
+				bufnr = buffer.bufnr,
+				filename = buffer.name,
+				lnum = buffer.lnum,
+			})
+		end
+	end
+	vim.fn.setqflist({}, "r", {
+		title = "Open buffers",
+		items = items,
+	})
+	vim.cmd("copen")
 end
-vim.keymap.set("n", "<leader><Space>", search_buffers, { silent = false })
 
+vim.keymap.set(
+	"n",
+	"<leader><space>",
+	search_buffers,
+	{ silent = true, desc = "Search open buffers" }
+)
