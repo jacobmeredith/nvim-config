@@ -1,4 +1,4 @@
-vim.lsp.enable({ "lua_ls", "ols" })
+vim.lsp.enable({ "lua_ls", "ols", "tsgo", "tailwindcss" })
 
 vim.diagnostic.config({ virtual_text = true })
 
@@ -15,6 +15,7 @@ vim.cmd("set completeopt+=noselect")
 
 vim.keymap.set("n", "gd", vim.lsp.buf.definition)
 vim.keymap.set("n", "gD", vim.lsp.buf.declaration)
+vim.keymap.set("n", "<leader>gr", vim.lsp.buf.references)
 
 vim.keymap.set("n", "K", vim.lsp.buf.hover)
 
