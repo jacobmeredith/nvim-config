@@ -14,6 +14,18 @@ return {
   },
   opts = {
     notify_on_error = false,
+    formatters = {
+      odinfmt = {
+        cwd = function(_, ctx)
+          local config = vim.fs.find('odinfmt.json', {
+            path = ctx.dirname,
+            upward = true,
+          })[1]
+          return config and vim.fs.dirname(config)
+        end,
+        require_cwd = true,
+      },
+    },
     formatters_by_ft = {
       javascript = { 'prettier' },
       typescript = { 'prettier' },
@@ -29,9 +41,10 @@ return {
       liquid = { 'prettier' },
       lua = { 'stylua' },
       python = { 'isort', 'black' },
+      odin = { "odinfmt" }
     },
     format_on_save = {
-      lsp_fallback = true,
+      lsp_format = 'fallback',
       async = false,
       timeout_ms = 1000,
     },
